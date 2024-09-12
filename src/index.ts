@@ -2,8 +2,7 @@
 import express from 'express';
 import type { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import https from 'https';
-import fs from 'fs';
+import http from 'http';
 import compression from 'compression';
 
 import { Logger } from './logging';
@@ -13,8 +12,6 @@ const {
   APP_VERSION,
   APPLICATION_NAME,
   ENVIRONMENT,
-  CERTIFICATE_PATH,
-  CERTIFICATE_DEFAULT_PASSWORD,
   ROUTE_PREFIX
 } = process.env;
 
@@ -132,12 +129,9 @@ app.get(`${ROUTE_PREFIX}/test/ServiceProviderConfig`, (req: Request, res: Respon
 });
 
 
-const httpsServer = https.createServer({
-  pfx: fs.readFileSync(CERTIFICATE_PATH),
-  passphrase: CERTIFICATE_DEFAULT_PASSWORD
-}, app);
+const httpsServer = http.createServer(app);
 
-const PORT = process.env.PORT || 433;
+const PORT = process.env.PORT || 80;
 
 httpsServer.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`);
